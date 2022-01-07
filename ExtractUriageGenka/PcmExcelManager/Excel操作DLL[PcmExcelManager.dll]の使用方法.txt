@@ -1,0 +1,62 @@
+①：「PcmExcelManager.dll」を実行環境に配置してください。
+②：参照設定に「PcmExcelManager.dll」「Microsoft.Office.Interop.Excel」を追加してください。
+
+
+以下に最低限必要そうな実装例を記載しています。
+
+// Excel操作クラスのインスタンスを生成する。
+using (PcmExcelManager excelManager = new PcmExcelManager())
+{
+	var templatePath = @"D:\Test\Sample.xlsx";
+
+    // 共通シートの設定
+    var workBooks = excelManager.GetWorkbooks();
+    var workBook = excelManager.OpenWorkbook(workBooks, templatePath);
+    var workSheets = excelManager.GetSheets(workBook);
+    {
+        // 指定したシートを取得する。
+        var workSheet = excelManager.GetWorksheet(workSheets, "共通");
+
+        // 指定したセルに値を出力する。
+        excelManager.Write(workSheet, "A1", "出力する値");
+
+        // 指定した範囲セルに値を出力する。
+        object[,] values = new object[5, 3];  	// 第１配列が行、第２配列が列
+        excelManager.Write(workSheet, "B1:D5", values);
+
+        // 指定した行を削除する。
+        int startRow = 30;
+        int endRow = 40;
+        excelManager.DeleteRows(workSheet, startRow, endRow);
+
+        // 指定した列を削除する。
+        int startCol = 5;
+        int endCol = 10;
+        excelManager.DeleteColumns(workSheet, startCol, endCol);
+
+        // 指定した列を非表示にする。
+        int hiddenStartCol = 10;
+        int hiddenEndCol = 15;
+        excelManager.HiddenColumns(workSheet, hiddenStartCol, hiddenEndCol);
+
+        // 指定したシート名をアクティブにする。
+        excelManager.SetActiveSheet(workSheets, "表示シート");
+
+        // Excelファイルを保存する。
+        // ※ユーザに任意で保存させる場合は「workBook.SaveAs(bookPath);」は実行しないでください。
+        var bookPath = @"D:\Test\SampleSave.xlsx";
+        workBook.SaveAs(bookPath);
+
+        // Excelファイルを開く。
+        excelManager.Show();
+
+		// Excelファイルを元にPDFを出力する場合は以下の通りです。
+        workBook.ExportAsFixedFormat(
+            Type: XlFixedFormatType.xlTypePDF,
+            Filename: @"D:\Test\Sample.pdf",
+            Quality: XlFixedFormatQuality.xlQualityStandard);
+
+		// PDFを表示させる。
+        Process.Start(@"D:\Test\Sample.pdf");
+    }
+}
