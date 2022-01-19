@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Office.Interop.Excel;
 using PCM;
 
-
 /// <summary>
 /// シート名から数値型の月を得る
 /// </summary>
@@ -77,7 +76,9 @@ string GetCellNameA1(int c)
 /// </summary>
 object[,] ToArray<T>(IEnumerable<T> enumerable)
 {
-    var props = typeof(T).GetProperties().ToList();
+    var props = 
+        typeof(T).GetProperties().OrderBy(p => (Attribute.GetCustomAttribute(p, typeof(OrderAttribute)) as OrderAttribute).Value).ToList();
+    //var props = typeof(T).GetProperties().ToList();
     object[,] data = new object[enumerable.Count(), props.Count()];
     int rowCount = 0;
     foreach (var obj in enumerable)
@@ -99,9 +100,41 @@ var configuration = new ConfigurationBuilder()
 .AddJsonFile("appsettings.json", true, true)
 .Build();
 
+var columnHeaders = new List<ColumnHeader>() 
+{ 
+    new ColumnHeader() { Name = "年", Column = 1 },
+    new ColumnHeader() { Name = "月", Column = 2 },
+    new ColumnHeader() { Name = "分類", Column = 3 },
+    new ColumnHeader() { Name = "部署", Column = 4 },
+    new ColumnHeader() { Name = "客先名", Column = 5 },
+    new ColumnHeader() { Name = "契約", Column = 6 },
+    new ColumnHeader() { Name = "案件名", Column = 7 },
+    new ColumnHeader() { Name = "実績(税抜)", Column = 8 },
+    new ColumnHeader() { Name = "実績(税込)", Column = 9 },
+};
+
 var targetFolder = configuration.GetSection("Folders")["TargetFolder"];
 var outputFOlder = configuration.GetSection("Folders")["OutputFolder"];
 var files = configuration.GetSection("Files").Get<List<string>>();
+var filters = configuration.GetSection("Filters").Get<List<ExtractCondition>>();
+
+if (filters != null)
+{
+    foreach (var filter in filters)
+    {
+        var fieldName = filter.FieldName;
+        if (!columnHeaders.Select(e => e.Name).Contains(fieldName))
+        {
+            throw new ArgumentException("$フィルターに設定されている[{fieldName}]は存在しない列名です");
+        }
+
+        var ope = filter.Operator;
+        if (!new string[] { "=", "!=", "<", ">", "<=", "=>" }.Contains(ope))
+        {
+            throw new ArgumentException("$フィルターに設定されている比較演算子[{ope}]は無効です");
+        }
+    }
+}
 
 const int COL_BUNRUI = 1;
 const int COL_SYUBETSU = 2;
@@ -208,23 +241,67 @@ using (var excelManager = new PcmExcelManager())
     var workBooks = excelManager.GetWorkbooks();
     var workBook = workBooks.Add();
 
-    var uriage = summaryList.Where(e => e.Bunrui == "売上");
-    var shiire = summaryList.Where(e => e.Bunrui == "仕入");
+    // 売上側にフィルタをかける
+    var exp = new List<Tuple<string, string, object, Type>>();
+    exp.Add(new Tuple<string, string, object, Type>("Bunrui", "=", "売上", typeof(string)));
+    if (filters != null)
+    {
+        foreach (var filter in filters)
+        {
+            (string field, string condition, object value, Type type) f = filter.FieldName switch
+            {
+                "年" => ("Year", filter.Operator, int.Parse(filter.Value), typeof(int)),
+                "月" => ("Month", filter.Operator, int.Parse(filter.Value), typeof(int)),
+                "分類" => ("Bunrui", filter.Operator, filter.Value, typeof(string)),
+                "部署" => ("Busho", filter.Operator, filter.Value, typeof(string)),
+                "客先名" => ("Kyakusakimei", filter.Operator, filter.Value, typeof(string)),
+                "契約" => ("Keiyaku", filter.Operator, filter.Value, typeof(string)),
+                "案件名" => ("Ankenmei", filter.Operator, filter.Value, typeof(string)),
+                "実績(税抜)" => ("Jisseki", filter.Operator, decimal.Parse(filter.Value), typeof(decimal)),
+                "実績(税込)" => ("JissekZeikomi", filter.Operator, decimal.Parse(filter.Value), typeof(decimal)),
+                _ => (string.Empty, filter.Operator, filter.Value, typeof(string))
+            };
+
+            exp.Add(new Tuple<string, string, object, Type>(f.field, f.condition, f.value, f.type));
+        }
+    }
+    var uriage = summaryList.DynamicWhere(exp).ToList();
+
+    // 仕入側にフィルタをかける
+    exp.Clear();
+    exp.Add(new Tuple<string, string, object, Type>("Bunrui", "=", "仕入", typeof(string)));
+    if (filters != null)
+    {
+        foreach (var filter in filters)
+        {
+            (string field, string condition, object value, Type type) f = filter.FieldName switch
+            {
+                "年" => ("Year", filter.Operator, int.Parse(filter.Value), typeof(int)),
+                "月" => ("Month", filter.Operator, int.Parse(filter.Value), typeof(int)),
+                "分類" => ("Bunrui", filter.Operator, filter.Value, typeof(string)),
+                "部署" => ("Busho", filter.Operator, filter.Value, typeof(string)),
+                "客先名" => ("Kyakusakimei", filter.Operator, filter.Value, typeof(string)),
+                "契約" => ("Keiyaku", filter.Operator, filter.Value, typeof(string)),
+                "案件名" => ("Ankenmei", filter.Operator, filter.Value, typeof(string)),
+                "実績(税抜)" => ("Jisseki", filter.Operator, decimal.Parse(filter.Value), typeof(decimal)),
+                "実績(税込)" => ("JissekZeikomi", filter.Operator, decimal.Parse(filter.Value), typeof(decimal)),
+                _ => (string.Empty, filter.Operator, filter.Value, typeof(string))
+            };
+
+            exp.Add(new Tuple<string, string, object, Type>(f.field, f.condition, f.value, f.type));
+        }
+    }
+    var shiire = summaryList.DynamicWhere(exp).ToList();
 
     // 売上シート準備
     var uriageSheet = workBook.Sheets["Sheet1"];
     uriageSheet.Name = "売上";
 
     // 列ヘッダ設定
-    uriageSheet.Cells[1, 1].Value = "年";
-    uriageSheet.Cells[1, 2].Value = "月";
-    uriageSheet.Cells[1, 3].Value = "分類";
-    uriageSheet.Cells[1, 4].Value = "部署";
-    uriageSheet.Cells[1, 5].Value = "客先名";
-    uriageSheet.Cells[1, 6].Value = "契約";
-    uriageSheet.Cells[1, 7].Value = "案件名";
-    uriageSheet.Cells[1, 8].Value = "実績(税抜)";
-    uriageSheet.Cells[1, 9].Value = "実績(税込)";
+    foreach (var ch in columnHeaders)
+    {
+        uriageSheet.Cells[1, ch.Column].Value = ch.Name;
+    }
 
     // 2次元配列にして一括設定
     object[,] arrayValues = ToArray(uriage);
@@ -239,15 +316,10 @@ using (var excelManager = new PcmExcelManager())
     var shiireSheet = workBook.Sheets["仕入"];
 
     // 列ヘッダ設定
-    shiireSheet.Cells[1, 1].Value = "年";
-    shiireSheet.Cells[1, 2].Value = "月";
-    shiireSheet.Cells[1, 3].Value = "分類";
-    shiireSheet.Cells[1, 4].Value = "部署";
-    shiireSheet.Cells[1, 5].Value = "客先名";
-    shiireSheet.Cells[1, 6].Value = "契約";
-    shiireSheet.Cells[1, 7].Value = "案件名";
-    shiireSheet.Cells[1, 8].Value = "実績(税抜)";
-    shiireSheet.Cells[1, 9].Value = "実績(税込)";
+    foreach (var ch in columnHeaders)
+    {
+        shiireSheet.Cells[1, ch.Column].Value = ch.Name;
+    }
 
     // 2次元配列にして一括設定
     arrayValues = ToArray(shiire);
