@@ -218,9 +218,9 @@ foreach (var file in files)
                                 Month = GetMonth(sheet.Name),
                                 Bunrui = lastBunrui,
                                 Busho = $"{shozoku}_{lastBusho}",
-                                Kyakusakimei = kyakusakimei.Value,
-                                Keiyaku = keiyaku.Value,
-                                Ankenmei = ankenmei.Value,
+                                Kyakusakimei = kyakusakimei.Text,
+                                Keiyaku = keiyaku.Text,
+                                Ankenmei = ankenmei.Text,
                                 Jisseki = (decimal?)jisseki.Value2 ?? 0m,
                                 JissekZeikomi = (decimal?)jissekizei.Value2 ?? 0m,
                             });
