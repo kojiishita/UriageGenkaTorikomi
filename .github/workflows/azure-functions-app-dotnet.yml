@@ -103,5 +103,7 @@ jobs:
         run: |
           # 環境変数をループ処理で参照
           Get-ChildItem Env: | ForEach-Object {
-              Write-Host "$($_.Name)=$($_.Value)"
+              if ($_.Name -like 'BAT*') {
+                  Write-Host "$($_.Name)=$($_.Value)"
+              }
           }
