@@ -105,7 +105,9 @@ jobs:
           Get-ChildItem Env: | ForEach-Object {
               $name = $_.Name
               $value = $_.Value
-              if ($name -match '^BAT[A-Z]{2}[0-9]{5}_') {
-                  Write-Host "$name=$value"
+              if ($name -match '^BAT[A-Z]{2}[0-9]{5}_SOURCE') {
+                  Write-Host "$value"
+                  $items = $value.Split("_")
+                  Write-Host "App_Data/jobs/triggered/${items[0]}"
               }
           }
