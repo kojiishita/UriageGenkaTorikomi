@@ -107,7 +107,7 @@ jobs:
               $value = $_.Value
               if ($name -match '^BAT[A-Z]{2}[0-9]{5}_SOURCE') {
                   Write-Host "$value"
-                  $items = $value.Split("_")
+                  $items = $name.Split("_")
                   Write-Host "App_Data/jobs/triggered/${items[0]}"
               }
           }
