@@ -105,7 +105,7 @@ jobs:
           Get-ChildItem Env: | ForEach-Object {
               $name = $_.Name
               $value = $_.Value
-              if ($name -match '^BAT[A-Za-z0-9]{10}_') {
+              if ($name -match '^BAT[A-Z]{2}[0-9]{5}_') {
                   Write-Host "$name=$value"
               }
           }
