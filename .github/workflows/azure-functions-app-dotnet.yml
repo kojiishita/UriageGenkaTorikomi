@@ -106,8 +106,8 @@ jobs:
               $name = $_.Name
               $value = $_.Value
               if ($name -match '^BAT[A-Z]{2}[0-9]{5}_SOURCE') {
-                  Write-Host "$value"
+                  Write-Host "PROJ => ${value}"
                   $items = $name.Split("_")
-                  Write-Host "App_Data/jobs/triggered/${items[0]}"
+                  Write-Host "PUBLISH => App_Data/jobs/triggered/$($items[0])"
               }
           }
