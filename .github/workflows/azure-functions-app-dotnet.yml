@@ -3,15 +3,105 @@ name: strategy test
 on: 
   workflow_dispatch:
 
+# 環境変数
+env:
+  NUGET_URL : https://nuget.pkg.github.com/works-g/index.json
+  CLIENT_CSPROJ : ./HybridCapOh/HybridCapOh.Client/HybridCapOh.Client.csproj
+  BATCH_PUBLISH : App_Data/HybridCapOh.Batch
+  BATCL00101_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/Claim/BATCL00101.AccountTransferDataCreate/BATCL00101.AccountTransferDataCreate.csproj	
+  BATCL00101_PUBLISH : App_Data/jobs/triggered/BATCL00101
+  BATCL00201_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/Claim/BATCL00201.AccountTransferResultDataImport/BATCL00201.AccountTransferResultDataImport.csproj
+  BATCL00201_PUBLISH : App_Data/jobs/triggered/BATCL00201
+  BATCL00301_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/Claim/BATCL00301.OverdueConfirmProcessing/BATCL00301.OverdueConfirmProcessing.csproj
+  BATCL00301_PUBLISH : App_Data/jobs/triggered/BATCL00301
+  BATCL00801_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/Claim/BATCL00801.TheDayOfClaimAmountTotalUpdating/BATCL00801.TheDayOfClaimAmountTotalUpdating.csproj
+  BATCL00801_PUBLISH : App_Data/jobs/triggered/BATCL00801
+  BATCM01801_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/Common/BATCM01801.SystemDateUpdating/BATCM01801.SystemDateUpdating.csproj
+  BATCM01801_PUBLISH : App_Data/jobs/triggered/BATCM01801
+  BATCM01901_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/Common/BATCM01901.FBTransferDataCreating/BATCM01901.FBTransferDataCreating.csproj
+  BATCM01901_PUBLISH : App_Data/jobs/triggered/BATCM01901
+  BATCO00101_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/Contract/BATCO00101.AmortizationExcuteProcessing/BATCO00101.AmortizationExcuteProcessing.csproj
+  BATCO00101_PUBLISH : App_Data/jobs/triggered/BATCO00101
+  BATCI00201_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/CreditInformation/BATCI00201.JICCReportDataCreating/BATCI00201.JICCReportDataCreating.csproj
+  BATCI00201_PUBLISH : App_Data/jobs/triggered/BATCI00201
+  BATCI00301_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/CreditInformation/BATCI00301.CICReportDataCreating/BATCI00301.CICReportDataCreating.csproj
+  BATCI00301_PUBLISH : App_Data/jobs/triggered/BATCI00301
+  BATCS01701_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/Customer/BATCS01701.NegotiationHistoryBunchImport/BATCS01701.NegotiationHistoryBunchImport.csproj
+  BATCS01701_PUBLISH : App_Data/jobs/triggered/BATCS01701
+  BATMR00801_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR00801.PaymentStatementData/BATMR00801.PaymentStatementData.csproj
+  BATMR00801_PUBLISH : App_Data/jobs/triggered/BATMR00801
+  BATMR00901_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR00901.InformationTransferDataOutput/BATMR00901.InformationTransferDataOutput.csproj
+  BATMR00901_PUBLISH : App_Data/jobs/triggered/BATMR00901
+  BATMR01001_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR01001.InformationPaymentDataOutput/BATMR01001.InformationPaymentDataOutput.csproj
+  BATMR01001_PUBLISH : App_Data/jobs/triggered/BATMR01001
+  BATMR01101_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR01101.PaymentRequestDataOutput/BATMR01101.PaymentRequestDataOutput.csproj
+  BATMR01101_PUBLISH : App_Data/jobs/triggered/BATMR01101
+  BATMR01201_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR01201.NotificationDataOutput/BATMR01201.NotificationDataOutput.csproj
+  BATMR01201_PUBLISH : App_Data/jobs/triggered/BATMR01201
+  BATMR01301_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR01301.RenotificationDataOutput/BATMR01301.RenotificationDataOutput.csproj
+  BATMR01301_PUBLISH : App_Data/jobs/triggered/BATMR01301
+  BATMR01401_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR01401.DunningLetterDataOutput/BATMR01401.DunningLetterDataOutput.csproj
+  BATMR01401_PUBLISH : App_Data/jobs/triggered/BATMR01401
+  BATMR01501_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR01501.BulkClaimProceedingNoticeDataOutput/BATMR01501.BulkClaimProceedingNoticeDataOutput.csproj
+  BATMR01501_PUBLISH : App_Data/jobs/triggered/BATMR01501
+  BATMR01601_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR01601.NotificationDocumentDataOutput/BATMR01601.NotificationDocumentDataOutput.csproj
+  BATMR01601_PUBLISH : App_Data/jobs/triggered/BATMR01601
+  BATMR04401_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR04401.InformationTransferLetter/BATMR04401.InformationTransferLetter.csproj
+  BATMR04401_PUBLISH : App_Data/jobs/triggered/BATMR04401
+  BATMR04501_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR04501.InformationPaymentLetter/BATMR04501.InformationPaymentLetter.csproj
+  BATMR04501_PUBLISH : App_Data/jobs/triggered/BATMR04501
+  BATMR04601_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR04601.PaymentRequestLetter/BATMR04601.PaymentRequestLetter.csproj
+  BATMR04601_PUBLISH : App_Data/jobs/triggered/BATMR04601
+  BATMR04701_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR04701.NotificationLetter/BATMR04701.NotificationLetter.csproj
+  BATMR04701_PUBLISH : App_Data/jobs/triggered/BATMR04701
+  BATMR04801_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR04801.RenotificationLetter/BATMR04801.RenotificationLetter.csproj
+  BATMR04801_PUBLISH : App_Data/jobs/triggered/BATMR04801
+  BATMR04901_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR04901.DunningLetter/BATMR04901.DunningLetter.csproj
+  BATMR04901_PUBLISH : App_Data/jobs/triggered/BATMR04901
+  BATMR05001_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR05001.BulkClaimProceedingNoticeLetter/BATMR05001.BulkClaimProceedingNoticeLetter.csproj
+  BATMR05001_PUBLISH : App_Data/jobs/triggered/BATMR05001
+  BATMR05101_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ManagementReport/BATMR05101.NotificationDocumentLetter/BATMR05101.NotificationDocumentLetter.csproj
+  BATMR05101_PUBLISH : App_Data/jobs/triggered/BATMR05101
+  BATMM00901_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/MasterMaintenance/BATMM00901.PostCodeDictionaryImport/BATMM00901.PostCodeDictionaryImport.csproj
+  BATMM00901_PUBLISH : App_Data/jobs/triggered/BATMM00901
+  BATMM01001_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/MasterMaintenance/BATMM01001.FinancialInstitutionMasterImport/BATMM01001.FinancialInstitutionMasterImport.csproj
+  BATMM01001_PUBLISH : App_Data/jobs/triggered/BATMM01001
+  BATMS00801_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/MemberStore/BATMS00801.PaymentNoticePaperSettlementDetailPaper/BATMS00801.PaymentNoticePaperSettlementDetailPaper.csproj
+  BATMS00801_PUBLISH : App_Data/jobs/triggered/BATMS00801
+  BATMS01801_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/MemberStore/BATMS01801.MemberStoreSettlement/BATMS01801.MemberStoreSettlement.csproj
+  BATMS01801_PUBLISH : App_Data/jobs/triggered/BATMS01801
+  BATRM01401_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ReceiptMoney/BATRM01401.FbReceiptMoneyDataImport/BATRM01401.FbReceiptMoneyDataImport.csproj
+  BATRM01401_PUBLISH : App_Data/jobs/triggered/BATRM01401
+  BATRM01801_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ReceiptMoney/BATRM01801.ConvenienceReceiptMoneyImport/BATRM01801.ConvenienceReceiptMoneyImport.csproj
+  BATRM01801_PUBLISH : App_Data/jobs/triggered/BATRM01801
+  BATRP01101_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/Reception/BATRP01101.ApplicationBulkContractCompletion/BATRP01101.ApplicationBulkContractCompletion.csproj
+  BATRP01101_PUBLISH : App_Data/jobs/triggered/BATRP01101
+  BATRO01102_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ReportOutput/BATRO01102.ContractContentConfirmationMailSend/BATRO01102.ContractContentConfirmationMailSend.csproj
+  BATRO01102_PUBLISH : App_Data/jobs/triggered/BATRO01102
+  BATRO02001_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ReportOutput/BATRO02001.CollectionDailyReportPerformanceOutput/BATRO02001.CollectionDailyReportPerformanceOutput.csproj
+  BATRO02001_PUBLISH : App_Data/jobs/triggered/BATRO02001
+  BATRO02101_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ReportOutput/BATRO02101.CollectionDailyReportOccurrenceOutput/BATRO02101.CollectionDailyReportOccurrenceOutput.csproj
+  BATRO02101_PUBLISH : App_Data/jobs/triggered/BATRO02101
+  BATRO03301_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ReportOutput/BATRO03301.BasicCoefficientTransitionAggregate/BATRO03301.BasicCoefficientTransitionAggregate.csproj
+  BATRO03301_PUBLISH : App_Data/jobs/triggered/BATRO03301
+  BATCS03401_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/Customer/BATCS03401.IncomingPopupDataOutput/BATCS03401.IncomingPopupDataOutput.csproj
+  BATCS03401_PUBLISH : App_Data/jobs/triggered/BATCS03401
+  BATMS03201_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/MemberStore/BATMS03201.MemberStorePlanValueImport/BATMS03201.MemberStorePlanValueImport.csproj
+  BATMS03201_PUBLISH : App_Data/jobs/triggered/BATMS03201
+  BATCI00101_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/CIC/BATCI00101.InquiryRequest/BATCI00101.InquiryRequest.csproj
+  BATCI00101_PUBLISH : App_Data/jobs/triggered/BATCI00101
+  BATEL00301_CSPROJ : ./HybridCapOh/HybridCapOh.Batch/ExternalLinkage/BATEL00301.MasterDataExport/BATEL00301.MasterDataExport.csproj
+  BATEL00301_PUBLISH : App_Data/jobs/triggered/BATEL00301
+  BATMT00101_SOURCE : ./HybridCapOh/HybridCapOh.ManagementTools
+  BATMT00101_PUBLISH : App_Data/jobs/triggered/BATMT00101
+
 jobs:
-  loop_job:
+  my_job:
     runs-on: windows-latest
     steps:
-      - name: Set Environment Variable
+      - name: Set environment variables
         run: |
-          $env:MY_ARRAY = '[{"Name": "BATCL00101", "Path": "./HybridCapOh/HybridCapOh.Batch/Claim/BATCL00101.AccountTransferDataCreate/BATCL00101.AccountTransferDataCreate.csproj"}, {"Name": "BATCL00102", "Path": "./HybridCapOh/HybridCapOh.Batch/Claim/BATCL00201.AccountTransferResultDataImport/BATCL00201.AccountTransferResultDataImport.csproj"}]'
-          $array = $env:MY_ARRAY | ConvertFrom-Json
-          foreach ($item in $array) {
-            Write-Output "Loop iteration: $($item.Name)"
-            # ここにループ内で実行したいコマンドを追加
+          # 環境変数をループ処理で参照
+          Get-ChildItem Env: | ForEach-Object {
+              Write-Host "$($_.Name)=$($_.Value)"
           }
