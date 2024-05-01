@@ -4,17 +4,15 @@ on:
   workflow_dispatch:
 
 env:
-  MY_JSON_CONFIG: '{"key1": "value1", "key2": "value2"}'
-  
+  FRUIT: '["Apple", "Pear", "Banana", "Orange"]'
+
 jobs:
-  example_matrix:
+  execute_jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: ["{\"name\": \"ubuntu-latest\"}", "{\"name\": \"windows-latest\"}"]
-        version: [10, 12, 14]
+        FRUIT: ${{ fromJson(env.FRUIT) }}
     steps:
-      - name: Show Matrix Values
+      - name: Show Fruit
         run: |
-          echo "OS: ${{ fromJson(matrix.os).name }}"
-          echo "Version: ${{ matrix.version }}"
+          echo "Fruit: ${{ matrix.FRUIT }}"
