@@ -5,13 +5,13 @@ on:
 
 jobs:
   loop_job:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Set Environment Variable
         run: |
-          $env:MY_ARRAY = '[{"BATCL00101": "./HybridCapOh/HybridCapOh.Batch/Claim/BATCL00101.AccountTransferDataCreate/BATCL00101.AccountTransferDataCreate.csproj"}, {"BATCL00102": "./HybridCapOh/HybridCapOh.Batch/Claim/BATCL00201.AccountTransferResultDataImport/BATCL00201.AccountTransferResultDataImport.csproj"}]'
+          $env:MY_ARRAY = '[{"Name": "BATCL00101", "Path": "./HybridCapOh/HybridCapOh.Batch/Claim/BATCL00101.AccountTransferDataCreate/BATCL00101.AccountTransferDataCreate.csproj"}, {"Name": "BATCL00102", "Path": "./HybridCapOh/HybridCapOh.Batch/Claim/BATCL00201.AccountTransferResultDataImport/BATCL00201.AccountTransferResultDataImport.csproj"}]'
           $array = $env:MY_ARRAY | ConvertFrom-Json
           foreach ($item in $array) {
-            Write-Output "Loop iteration: $($item.Keys)"
+            Write-Output "Loop iteration: $($item.Name)"
             # ここにループ内で実行したいコマンドを追加
           }
