@@ -10,8 +10,6 @@ jobs:
   loop_job:
     runs-on: windows-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
       - name: Run Loop Script
         run: |
           $env:MY_ARRAY = "item1", "item2", "item3" # ここに配列の要素を定義
