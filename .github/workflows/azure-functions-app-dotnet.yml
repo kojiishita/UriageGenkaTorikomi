@@ -7,12 +7,15 @@ env:
   FRUIT: '["Apple", "Pear", "Banana", "Orange"]'
 
 jobs:
-  execute_jobs:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        FRUIT: ${{ fromJson(env.FRUIT) }}
+  loop_job:
+    runs-on: windows-latest
     steps:
-      - name: Show Fruit
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run Loop Script
         run: |
-          echo "Fruit: ${{ matrix.FRUIT }}"
+          $env:MY_ARRAY = "item1", "item2", "item3" # ここに配列の要素を定義
+          foreach ($item in $env:MY_ARRAY) {
+            Write-Output "Loop iteration: $item"
+            # ここにループ内で実行したいコマンドを追加
+          }
