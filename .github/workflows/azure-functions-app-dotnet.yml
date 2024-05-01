@@ -3,16 +3,13 @@ name: strategy test
 on: 
   workflow_dispatch:
 
-env:
-  FRUIT: '["Apple", "Pear", "Banana", "Orange"]'
-
 jobs:
   loop_job:
     runs-on: windows-latest
     steps:
       - name: Run Loop Script
         run: |
-          $env:MY_ARRAY = "item1", "item2", "item3" # ここに配列の要素を定義
+          $env:MY_ARRAY = "apple", "banana", "orange" # ここに配列の要素を定義
           foreach ($item in $env:MY_ARRAY) {
             Write-Output "Loop iteration: $item"
             # ここにループ内で実行したいコマンドを追加
