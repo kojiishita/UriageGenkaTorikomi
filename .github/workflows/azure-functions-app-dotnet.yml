@@ -3,14 +3,18 @@ name: strategy test
 on: 
   workflow_dispatch:
 
+env:
+  MY_JSON_CONFIG: '{"key1": "value1", "key2": "value2"}'
+  
 jobs:
-  echo_job:
+  example_matrix:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: ["{\"name\": \"ubuntu-latest\"}", "{\"name\": \"windows-latest\"}"]
         version: [10, 12, 14]
-        
     steps:
-      - name: Echo Message
-        run: echo "Hello from ${{ matrix.os }} with Node.js version ${{ matrix.version }}"
+      - name: Show Matrix Values
+        run: |
+          echo "OS: ${{ fromJson(matrix.os).name }}"
+          echo "Version: ${{ matrix.version }}"
